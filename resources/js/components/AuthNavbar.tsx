@@ -4,6 +4,11 @@ import { logoutUser } from "./features/auth/authSlice";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPiggyBank, faPowerOff } from "@fortawesome/free-solid-svg-icons";
 import { useState } from "react";
+import { resetPayeeState } from "./features/payee/payeeSlice";
+import { resetTransactionState } from "./features/transactions/transactionSlice";
+import { resetAccountState } from "./features/accounts/accountsSlice";
+import { resetUserState } from "./features/user/userSlice";
+import { resetCategoryState } from "./features/categories/categorySlice";
 
 export default function AuthNavbar(props) {
     var dispatch = useAppDispatch();
@@ -13,7 +18,14 @@ export default function AuthNavbar(props) {
 
     function submitLogout(e) {
         e.preventDefault();
-        dispatch(logoutUser());
+        dispatch(logoutUser()).then((action: any) => {
+            //clear all states
+            dispatch(resetPayeeState());
+            dispatch(resetCategoryState());
+            dispatch(resetTransactionState());
+            dispatch(resetAccountState());
+            dispatch(resetUserState());
+        });
     }
 
     return (
@@ -23,7 +35,7 @@ export default function AuthNavbar(props) {
             aria-label="main navigation"
         >
             <div className="navbar-brand title">
-                <Link className="navbar-item" to={isAuth ? "/accounts":"/"}>
+                <Link className="navbar-item" to={isAuth ? "/accounts" : "/"}>
                     <FontAwesomeIcon icon={faPiggyBank} />
                     &nbsp;&nbsp;Tilkex
                 </Link>
@@ -42,8 +54,13 @@ export default function AuthNavbar(props) {
                 </a>
             </div>
 
-            <div id="navbarBasicExample" className={`navbar-menu ${active && "is-active "}`}>
-                <div className="navbar-start"></div>
+            <div
+                id="navbarBasicExample"
+                className={`navbar-menu ${active && "is-active "}`}
+            >
+                <div className="navbar-start">
+
+                </div>
 
                 <div className="navbar-end">
                     <div className="navbar-item">
@@ -64,21 +81,25 @@ export default function AuthNavbar(props) {
                                     </Link>
                                 </div>
                             )}
-                            {isAuth && <form onSubmit={submitLogout}>
-                                <button
-                                    type="submit"
-                                    className={`button ${
-                                        loading === "pending"
-                                            ? "is-loading"
-                                            : ""
-                                    }`}
-                                >
-                                    <strong>
-                                        <FontAwesomeIcon icon={faPowerOff} />{" "}
-                                        Logout
-                                    </strong>
-                                </button>
-                            </form>}
+                            {isAuth && (
+                                <form onSubmit={submitLogout}>
+                                    <button
+                                        type="submit"
+                                        className={`button ${
+                                            loading === "pending"
+                                                ? "is-loading"
+                                                : ""
+                                        }`}
+                                    >
+                                        <strong>
+                                            <FontAwesomeIcon
+                                                icon={faPowerOff}
+                                            />{" "}
+                                            Logout
+                                        </strong>
+                                    </button>
+                                </form>
+                            )}
                         </div>
                     </div>
                 </div>

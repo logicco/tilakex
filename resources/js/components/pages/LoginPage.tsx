@@ -26,7 +26,7 @@ export default function LoginPage() {
 
 
     function hasErrorMessage() {
-        return error && !error.errors && error.message !== "";
+        return error && !error.errors;
     }
 
     const submitSuccess: SubmitHandler<Inputs> = async (data) => {
@@ -49,7 +49,7 @@ export default function LoginPage() {
                     {hasErrorMessage() && (
                         <FlashMessage
                             variant="danger"
-                            message={error.message}
+                            message={"Invalid credentials"}
                         />
                     )}
                     <form

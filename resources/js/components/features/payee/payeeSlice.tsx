@@ -77,6 +77,9 @@ const payeeSlice = createSlice({
     name: "payee",
     initialState,
     reducers: {
+        resetPayeeState(state) {
+            return initialState
+        },
         showPayeeModal(state, action: PayloadAction<ShowModal<Payee>>) {
             switch (action.payload.type) {
                 case EnumModalType.add:
@@ -151,5 +154,5 @@ const payeeSlice = createSlice({
     }
 })
 
-export const { showPayeeModal, hidePayeeModals } = payeeSlice.actions
+export const { showPayeeModal, hidePayeeModals, resetPayeeState } = payeeSlice.actions
 export default payeeSlice;

@@ -99,7 +99,6 @@ export default function MontlyBreakdownPage() {
                         fetchMonthlyReport(action.payload[0].id);
                     } else {
                         //no accounts exist in db
-                        console.log("should make it false");
                         setInitialLoading(false);
                         setMonthlyBreakdownLoading(false);
                         setErrorMessage("No accounts found");

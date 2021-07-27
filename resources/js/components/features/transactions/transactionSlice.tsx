@@ -179,6 +179,9 @@ const transactionSlice = createSlice({
     name: "transaction",
     initialState,
     reducers: {
+        resetTransactionState(state){
+            return initialState
+        },
         clearTransactions(state, action: PayloadAction<Account>) {
             if(state.account.id === action.payload.id) {
                 state.account = initialState.account;
@@ -261,5 +264,5 @@ const transactionSlice = createSlice({
     }
 })
 
-export const { showDeleteModal, hideDeleteModal, clearTransactions, updateAccount } = transactionSlice.actions
+export const { showDeleteModal, hideDeleteModal, clearTransactions, updateAccount, resetTransactionState } = transactionSlice.actions
 export default transactionSlice;

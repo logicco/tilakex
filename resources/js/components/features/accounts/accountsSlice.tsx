@@ -86,6 +86,9 @@ const accountsSlice = createSlice({
     name: "account",
     initialState,
     reducers: {
+        resetAccountState(state){
+            return initialState
+        },
         showAccountModal(state, action: PayloadAction<ShowModal<Account>>) {
             switch (action.payload.type) {
                 case EnumModalType.add:
@@ -159,5 +162,5 @@ const accountsSlice = createSlice({
         })
     }
 })
-export const {showAccountModal, hideAccountModals} = accountsSlice.actions;
+export const {showAccountModal, hideAccountModals, resetAccountState} = accountsSlice.actions;
 export default accountsSlice;

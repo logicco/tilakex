@@ -1,0 +1,8 @@
+{
+    "3": [
+        "added config file for app bootstrap settings",
+        "added support for Indian currency",
+        "fixed a bug where logging out would not destroy old redux state",
+        "added message on homepage informing user of auth status"
+    ]
+}

@@ -1,5 +1,3 @@
-import {Account} from "../components/features/accounts/accountsSlice";
-
 export interface Currency {
     id: number,
     name: string,
@@ -13,7 +11,8 @@ export interface TransactionType {
 
 export const currencies: Currency[] = [
     { id: 1, name: "Canada", code: "CAD", symbol: "$" },
-    { id: 2, name: "USA", code: "USD", symbol: "$" }
+    { id: 2, name: "USA", code: "USD", symbol: "$" },
+    { id: 3, name: "India", code: "INR", symbol: "₹" }
 ]
 
 export const transactionTypes: TransactionType[] = [

@@ -140,6 +140,9 @@ const categorySlice = createSlice({
     name: "category",
     initialState,
     reducers: {
+        resetCategoryState(state){
+            return initialState;
+        },
         selectCategory(state, action: PayloadAction<RawCategory>) {
           state.modal.data = action.payload;
         },
@@ -251,5 +254,5 @@ const categorySlice = createSlice({
     }
 })
 
-export const {showCategoryModal, hideCategoryModals, selectCategory, resetErrors} = categorySlice.actions;
+export const {showCategoryModal, hideCategoryModals, selectCategory, resetErrors, resetCategoryState} = categorySlice.actions;
 export default categorySlice

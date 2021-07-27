@@ -3,6 +3,7 @@ import {Account} from "../accounts/accountsSlice";
 import IconButton from "../../IconButton";
 import {faEdit, faTrash} from "@fortawesome/free-solid-svg-icons";
 import {useAppDispatch} from "../../../helpers/hooks";
+import { appDateFormat } from "../../../helpers/date";
 
 interface Props {
     account: Account
@@ -17,7 +18,7 @@ export default function TransactionListItem({transaction, account, selectTransac
         <tr>
             <td>{account.name}</td>
             <td>{account.currency.symbol}{t.amount}</td>
-            <td>{t.date}</td>
+            <td>{appDateFormat(t.date)}</td>
             <td>{t.category.parent ? `${t.category.parent.name}:${t.category.name}` : t.category.name}</td>
             <td>{t.payee.name}</td>
             <td>{t.transaction_type.name}</td>

@@ -4,12 +4,29 @@ const t = require("../../assets/t.png");
 const r = require("../../assets/r.png");
 import { Fragment } from "react";
 import { Link } from "react-router-dom";
+import { useAppSelector } from "../../helpers/hooks";
 var Carousel = require("react-responsive-carousel").Carousel;
 
 export default function HomePage(props) {
+    var isAuth = useAppSelector(s => s.auth.auth);
     return (
         <Fragment>
             <Layout>
+                {isAuth && (
+                    <div className="box">
+                    <div className="columns">
+                        <div className="column">
+                            <h1 className="subtitle">You are logged in</h1>
+                        </div>
+                        <div className="column has-text-right">
+                            <Link className={"button is-primary"}
+                                  to={`/accounts`}>
+                                      View Accounts
+                            </Link>
+                        </div>
+                    </div>
+                </div>
+                )}
                 <section className="columns mt-4">
                     <article className="column box">
                         <h1 className="is-size-2">

@@ -76,7 +76,9 @@ const userSlice = createSlice({
     name: "profile",
     initialState,
     reducers: {
-
+        resetUserState(state) {
+            return initialState
+        }
     },
     extraReducers: (builder) => {
         builder.addCase(resentVerificationEmail.pending, (state) => {
@@ -117,4 +119,5 @@ const userSlice = createSlice({
     }
 })
 
+export const { resetUserState } = userSlice.actions
 export default userSlice;

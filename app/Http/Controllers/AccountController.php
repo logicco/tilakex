@@ -25,7 +25,7 @@ class AccountController extends Controller
                 "errors" => [
                     "currency_id" => ["Unable to find currency"]
                 ]
-            ], 421);
+            ], 422);
         }
 
         $account = new Account();

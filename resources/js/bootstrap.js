@@ -1,4 +1,5 @@
 window._ = require('lodash');
+import config from "./helpers/appConfig";
 
 /**
  * We'll load the axios HTTP library which allows us to easily issue requests
@@ -9,7 +10,7 @@ window._ = require('lodash');
 window.axios = require('axios');
 
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
-axios.defaults.baseURL = 'https://api.tilakex.com';
+axios.defaults.baseURL = config.PRODUCTION_BASE_URL;
 window.axios.defaults.withCredentials = true;
 
 /**

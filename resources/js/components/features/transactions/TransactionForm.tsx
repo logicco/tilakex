@@ -7,7 +7,7 @@ import {
     updateTransaction,
 } from "./transactionSlice";
 import { Account } from "../accounts/accountsSlice";
-import { SubmitHandler, useForm } from "react-hook-form";
+import { SubmitErrorHandler, SubmitHandler, useForm } from "react-hook-form";
 import { useEffect } from "react";
 import IconButton from "../../IconButton";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
@@ -47,9 +47,9 @@ interface Props {
 
 type Inputs = {
     amount: string;
-    category: ReactSelect;
-    type: ReactSelect;
-    payee: ReactSelect;
+    category_id: ReactSelect;
+    transaction_type_id: ReactSelect;
+    payee_id: ReactSelect;
     account: ReactSelect;
     date: string;
     notes: string;
@@ -77,6 +77,7 @@ export default function TransactionForm({
     useEffect(() => {
         setValue("amount", amountDefaultValue());
         setValue("date", dateDefaultValue());
+        setValue("payee_id", payeeDefaultValue());
     }, []);
 
     function isLoading() {
@@ -99,8 +100,14 @@ export default function TransactionForm({
         return isEditMode() ? t.date : "";
     }
 
-    function payeeDefaultValue() {
-        return isEditMode() ? { value: t.payee.id, label: t.payee.name } : null;
+    function accountDefaultValue() {
+        return { value: account.id.toString(), label: account.name }
+    }
+
+    function payeeDefaultValue() : ReactSelect {
+        return isEditMode()
+            ? { value: t.payee.id.toString(), label: t.payee.name }
+            : null;
     }
 
     const categoryDefaultValue = () => {
@@ -122,21 +129,28 @@ export default function TransactionForm({
             : null;
     }
 
+    const submitError: SubmitErrorHandler<Inputs> = (data) => {
+        console.log(data);
+        console.log(getValues())
+    }
+
     const submitSuccess: SubmitHandler<Inputs> = (data) => {
         console.log(data);
         if (isAddMode()) {
             console.log("Should add");
+            var form = {
+                amount: data.amount,
+                date: data.date,
+                notes: data.notes,
+                payee_id: data.payee_id.value,
+                category_id: data.category_id.value,
+                transaction_type_id: data.transaction_type_id.value,
+            };
+            console.log(form);
             dispatch(
                 addTransaction({
-                    account_id: account.id.toString(),
-                    form: {
-                        amount: data.amount,
-                        date: data.date,
-                        notes: data.notes,
-                        payee_id: data.payee.value,
-                        category_id: data.category.value,
-                        transaction_type_id: data.type.value,
-                    },
+                    account_id: data.account.value,
+                    form,
                 })
             ).then((action: any) => {
                 if (!action.error) {
@@ -148,15 +162,15 @@ export default function TransactionForm({
         if (isEditMode()) {
             dispatch(
                 updateTransaction({
-                    account_id: account.id.toString(),
+                    account_id: data.account.value,
                     transaction_id: t.id.toString(),
                     form: {
                         amount: data.amount,
                         date: data.date,
                         notes: data.notes,
-                        payee_id: data.payee.value,
-                        category_id: data.category.value,
-                        transaction_type_id: data.type.value,
+                        payee_id: data.payee_id.value,
+                        category_id: data.category_id.value,
+                        transaction_type_id: data.transaction_type_id.value,
                     },
                 })
             ).then((action: any) => {
@@ -168,7 +182,7 @@ export default function TransactionForm({
     };
 
     return (
-        <form onSubmit={handleSubmit(submitSuccess)}>
+        <form onSubmit={handleSubmit(submitSuccess, submitError)}>
             <section className="columns">
                 <article className="column">
                     <LabelController
@@ -179,10 +193,7 @@ export default function TransactionForm({
                         controller={
                             <AccountController
                                 control={control}
-                                defaultValue={{
-                                    value: account.id.toString(),
-                                    label: account.name,
-                                }}
+                                defaultValue={accountDefaultValue()}
                                 name="account"
                             />
                         }
@@ -217,14 +228,14 @@ export default function TransactionForm({
                 <article className="column">
                     <LabelController
                         label="Transaction Type"
-                        name="type"
+                        name="transaction_type_id"
                         error={error}
                         clienterrors={clientErrors}
                         controller={
                             <TransactionTypeController
                                 control={control}
                                 defaultValue={typeDefaultValue()}
-                                name="type"
+                                name="transaction_type_id"
                             />
                         }
                     />
@@ -248,14 +259,14 @@ export default function TransactionForm({
                         <article className="column">
                             <LabelController
                                 label="Payee"
-                                name="payee"
+                                name="payee_id"
                                 error={error}
                                 clienterrors={clientErrors}
                                 controller={
                                     <PayeeController
                                         control={control}
                                         defaultValue={payeeDefaultValue()}
-                                        name="payee"
+                                        name="payee_id"
                                     />
                                 }
                             />
@@ -275,14 +286,14 @@ export default function TransactionForm({
                         <article className="column">
                             <LabelController
                                 label="Category"
-                                name="category"
+                                name="category_id"
                                 error={error}
                                 clienterrors={clientErrors}
                                 controller={
                                     <CategoryController
                                         control={control}
                                         defaultValue={categoryDefaultValue()}
-                                        name="category"
+                                        name="category_id"
                                     />
                                 }
                             />

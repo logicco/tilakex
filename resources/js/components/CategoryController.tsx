@@ -20,7 +20,7 @@ export default function CategoryController(props: Props) {
                 <CategorySelectControl
                     defaultValue={defaultValue}
                     onChange={(option) => {
-                        props.field.onChange(option.value);
+                        props.field.onChange(option);
                     }}
                     {...props}
                 />

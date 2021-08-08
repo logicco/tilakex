@@ -21,7 +21,7 @@ export default function PayeeController(props: Props) {
                     styles={{ borderColor: "red" }}
                     defaultValue={defaultValue}
                     onChange={(option) => {
-                        props.field.onChange(option.value);
+                        props.field.onChange(option);
                     }}
                     {...props}
                 />

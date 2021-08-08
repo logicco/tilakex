@@ -18,7 +18,7 @@ export default function AccountController(props: Props) {
             defaultValue={defaultValue}
             render={(props) => (
                 <AccountSelectControl
-                    onChange={(option) => props.field.onChange(option.value)}
+                    onChange={(option) => props.field.onChange(option)}
                     {...props}
                     defaultValue={defaultValue}
                 />

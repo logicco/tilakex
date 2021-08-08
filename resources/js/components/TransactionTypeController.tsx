@@ -20,7 +20,7 @@ export default function TransactionTypeController(props: Props) {
                 <TransactionTypeSelectControl
                     defaultValue={defaultValue}
                     onChange={(option) => {
-                        props.field.onChange(option.value);
+                        props.field.onChange(option);
                     }}
                     {...props}
                 />

@@ -27,3 +27,7 @@ export const confirmPasswordRules = {
             "Confirm password must be atleast 8 characters",
     },
 }
+
+export function requiredRule(name: string) {
+    return { required: `${name} is required` }
+}

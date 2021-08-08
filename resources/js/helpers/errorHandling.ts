@@ -31,8 +31,12 @@ export function buildAppError(err: any, dispatch?: any): ThunkError {
     }else if (thunkError.status === 422) {  //data key only required when dealing with form errors
         thunkError.message = "";
         thunkError.data = err.response.data.errors;
+    }else if(thunkError.status === 404) {
+        return thunkError;
     }else{
-        dispatch(flashMessage({message: thunkError.message, variant:"danger"}))
+        if(dispatch) {
+            dispatch(flashMessage({message: thunkError.message, variant:"danger"}))
+        }
     }
 
     return thunkError;

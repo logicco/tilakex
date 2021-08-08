@@ -77,6 +77,9 @@ const payeeSlice = createSlice({
     name: "payee",
     initialState,
     reducers: {
+        removePayeeModalError(state) {
+            state.modal.error = null;
+        },
         resetPayeeState(state) {
             return initialState
         },
@@ -122,6 +125,7 @@ const payeeSlice = createSlice({
             state.modal.loading = "succeeded";
         })
         builder.addCase(deletePayee.rejected, (state, action) => {
+            console.log(action);
             state.modal.error = buildStateError(action.payload as ThunkError);
             state.modal.loading = "failed";
         })
@@ -154,5 +158,5 @@ const payeeSlice = createSlice({
     }
 })
 
-export const { showPayeeModal, hidePayeeModals, resetPayeeState } = payeeSlice.actions
+export const { showPayeeModal, removePayeeModalError, hidePayeeModals, resetPayeeState } = payeeSlice.actions
 export default payeeSlice;

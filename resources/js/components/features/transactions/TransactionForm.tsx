@@ -1,8 +1,5 @@
-import TransactionTypeSelectControl from "../../TransactionTypeSelectControl";
-import PayeeSelectControl from "../../PayeeSelectControl";
-import AccountSelectControl from "../../AccountSelectControl";
-import CategorySelectControl from "../../CategorySelectControl";
-import { EnumModalType, Mode } from "../../../helpers/enums";
+import { EnumModalType } from "../../../helpers/enums";
+import { Mode } from "../../../helpers/interfaces";
 import { useAppDispatch, useAppSelector } from "../../../helpers/hooks";
 import {
     addTransaction,
@@ -10,12 +7,36 @@ import {
     updateTransaction,
 } from "./transactionSlice";
 import { Account } from "../accounts/accountsSlice";
-import { Controller, SubmitHandler, useForm } from "react-hook-form";
+import { SubmitHandler, useForm } from "react-hook-form";
 import { useEffect } from "react";
 import IconButton from "../../IconButton";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { showPayeeModal } from "../payee/payeeSlice";
 import { showCategoryModal } from "../categories/categorySlice";
+import LabelInput, { LabelController } from "../../LabelInput";
+import AccountController from "../../AccountController";
+import TransactionTypeController from "../../TransactionTypeController";
+import PayeeController from "../../PayeeController";
+import CategoryController from "../../CategoryController";
+import Button from "../../Button";
+import { ReactSelect } from "../../../helpers/dataCaching";
+
+const amountRules = {
+    required: "Amount is required",
+    pattern: {
+        value: /^\s*(?=.*[1-9])\d*(?:\.\d{1,2})?\s*$/,
+        message:
+            "Amount must be a positive number, greater than 0 and only containing 2 decimal places",
+    },
+};
+
+const dateRules = {
+    required: "Date is required",
+    pattern: {
+        value: /^20[0-2][0-9]-((0[1-9])|(1[0-2]))-([0-2][1-9]|3[0-1])$/,
+        message: "Date is invalid",
+    },
+};
 
 interface Props {
     mode: Mode;
@@ -26,10 +47,10 @@ interface Props {
 
 type Inputs = {
     amount: string;
-    category_id: string;
-    type_id: string;
-    payee_id: string;
-    account_id: string;
+    category: ReactSelect;
+    type: ReactSelect;
+    payee: ReactSelect;
+    account: ReactSelect;
     date: string;
     notes: string;
 };
@@ -58,24 +79,16 @@ export default function TransactionForm({
         setValue("date", dateDefaultValue());
     }, []);
 
-    function hasDbError(key: string) {
-        return error && error.errors && error.errors[key];
-    }
-
-    function getDbError(key: string) {
-        return error.errors[key][0];
-    }
-
     function isLoading() {
         return loading === "pending";
     }
 
     function isEditMode() {
-        return mode === Mode.edit;
+        return mode === "edit";
     }
 
     function isAddMode() {
-        return mode === Mode.add;
+        return mode === "add";
     }
 
     function amountDefaultValue() {
@@ -86,11 +99,11 @@ export default function TransactionForm({
         return isEditMode() ? t.date : "";
     }
 
-    function payeeDefaultValue(): any {
-        return isEditMode() ? { value: t.payee.id, label: t.payee.name } : "";
+    function payeeDefaultValue() {
+        return isEditMode() ? { value: t.payee.id, label: t.payee.name } : null;
     }
 
-    const categoryDefaultValue = (): any => {
+    const categoryDefaultValue = () => {
         if (isEditMode()) {
             var category = transaction.category;
             return {
@@ -100,16 +113,17 @@ export default function TransactionForm({
                     : category.name,
             };
         }
-        return "";
+        return null;
     };
 
-    function typeDefaultValue(): any {
+    function typeDefaultValue() {
         return isEditMode()
             ? { value: t.transaction_type.id, label: t.transaction_type.name }
-            : "";
+            : null;
     }
 
     const submitSuccess: SubmitHandler<Inputs> = (data) => {
+        console.log(data);
         if (isAddMode()) {
             console.log("Should add");
             dispatch(
@@ -119,9 +133,9 @@ export default function TransactionForm({
                         amount: data.amount,
                         date: data.date,
                         notes: data.notes,
-                        payee_id: data.payee_id,
-                        category_id: data.category_id,
-                        transaction_type_id: data.type_id,
+                        payee_id: data.payee.value,
+                        category_id: data.category.value,
+                        transaction_type_id: data.type.value,
                     },
                 })
             ).then((action: any) => {
@@ -140,9 +154,9 @@ export default function TransactionForm({
                         amount: data.amount,
                         date: data.date,
                         notes: data.notes,
-                        payee_id: data.payee_id,
-                        category_id: data.category_id,
-                        transaction_type_id: data.type_id,
+                        payee_id: data.payee.value,
+                        category_id: data.category.value,
+                        transaction_type_id: data.type.value,
                     },
                 })
             ).then((action: any) => {
@@ -157,138 +171,63 @@ export default function TransactionForm({
         <form onSubmit={handleSubmit(submitSuccess)}>
             <section className="columns">
                 <article className="column">
-                    <div className="field">
-                        <label className="label">Account</label>
-                        <Controller
-                            defaultValue={account.id.toString()}
-                            control={control}
-                            render={(props) => (
-                                <AccountSelectControl
-                                    onChange={(option) =>
-                                        props.field.onChange(option.value)
-                                    }
-                                    {...props}
-                                    defaultValue={{
-                                        value: account.id.toString(),
-                                        label: account.name,
-                                    }}
-                                />
-                            )}
-                            name={"account_id"}
-                            rules={{ required: "Account is required" }}
-                        />
-                        {clientErrors.account_id && (
-                            <span className="text-danger">
-                                {clientErrors.account_id.message}
-                            </span>
-                        )}
-                    </div>
+                    <LabelController
+                        label="Account"
+                        name="account"
+                        error={error}
+                        clienterrors={clientErrors}
+                        controller={
+                            <AccountController
+                                control={control}
+                                defaultValue={{
+                                    value: account.id.toString(),
+                                    label: account.name,
+                                }}
+                                name="account"
+                            />
+                        }
+                    />
                 </article>
                 <article className="column">
-                    <div className="field">
-                        <label className="label">Amount</label>
-                        <div className="control">
-                            <input
-                                defaultValue={getValues().amount}
-                                onChange={(e) =>
-                                    setValue("amount", e.target.value)
-                                }
-                                {...register("amount", {
-                                    required: "Amount is required",
-                                    pattern: {
-                                        value: /^\s*(?=.*[1-9])\d*(?:\.\d{1,2})?\s*$/,
-                                        message:
-                                            "Amount must be a positive number, greater than 0 and only containing 2 decimal places",
-                                    },
-                                })}
-                                className={`input ${
-                                    hasDbError("amount") || clientErrors.amount
-                                        ? "is-danger"
-                                        : ""
-                                }`}
-                                type="text"
-                                placeholder="Enter amount"
-                            />
-                            {hasDbError("amount") && (
-                                <p className="help is-danger">
-                                    {getDbError("amount")}
-                                </p>
-                            )}
-                            {clientErrors.amount && (
-                                <p className="help is-danger">
-                                    {clientErrors.amount.message}
-                                </p>
-                            )}
-                        </div>
-                    </div>
+                    <LabelInput
+                        label="Amount"
+                        placeholder="Enter amount"
+                        name="amount"
+                        type="text"
+                        error={error}
+                        clienterrors={clientErrors}
+                        register={{ ...register("amount", amountRules) }}
+                        defaultValue={getValues().amount}
+                    />
                 </article>
                 <article className="column">
-                    <div className="field">
-                        <label className="label">Date</label>
-                        <div className="control">
-                            <input
-                                defaultValue={getValues().date}
-                                onChange={(e) =>
-                                    setValue("date", e.target.value)
-                                }
-                                {...register("date", {
-                                    required: "Date is required",
-                                    pattern: {
-                                        value: /^20[0-2][0-9]-((0[1-9])|(1[0-2]))-([0-2][1-9]|3[0-1])$/,
-                                        message: "Date is invalid",
-                                    },
-                                })}
-                                className={`input ${
-                                    hasDbError("date") || clientErrors.date
-                                        ? "is-danger"
-                                        : ""
-                                }`}
-                                type="date"
-                            />
-                            {hasDbError("date") && (
-                                <p className="help is-danger">
-                                    {getDbError("date")}
-                                </p>
-                            )}
-                            {clientErrors.date && (
-                                <p className="help is-danger">
-                                    {clientErrors.date.message}
-                                </p>
-                            )}
-                        </div>
-                    </div>
+                    <LabelInput
+                        label="Date"
+                        placeholder="Enter date"
+                        name="date"
+                        type="date"
+                        error={error}
+                        clienterrors={clientErrors}
+                        register={{ ...register("date", dateRules) }}
+                        defaultValue={getValues().date}
+                    />
                 </article>
             </section>
             <section className="columns">
                 <article className="column">
-                    <div className="field">
-                        <label className="label">Transaction Type</label>
-                        <Controller
-                            control={control}
-                            defaultValue={typeDefaultValue().value}
-                            rules={{ required: "Transaction type is required" }}
-                            render={(props) => (
-                                <TransactionTypeSelectControl
-                                    defaultValue={typeDefaultValue()}
-                                    onChange={(option) => {
-                                        props.field.onChange(option.value);
-                                    }}
-                                    {...props}
-                                />
-                            )}
-                            name="type_id"
-                        />
-                        {hasDbError("transaction_type_id") && (
-                            <p className="help is-danger">
-                                {getDbError("transaction_type_id")}
-                            </p>
-                        )}
-                        {clientErrors.type_id && (
-                            <p className="help is-danger">
-                                {clientErrors.type_id.message}
-                            </p>
-                        )}
-                    </div>
+                    <LabelController
+                        label="Transaction Type"
+                        name="type"
+                        error={error}
+                        clienterrors={clientErrors}
+                        controller={
+                            <TransactionTypeController
+                                control={control}
+                                defaultValue={typeDefaultValue()}
+                                name="type"
+                            />
+                        }
+                    />
                 </article>
 
                 <article className="column">
@@ -307,27 +246,19 @@ export default function TransactionForm({
                             />
                         </article>
                         <article className="column">
-                            <div className="field">
-                                <label className="label">Payee</label>
-                                <Controller
-                                    control={control}
-                                    defaultValue={payeeDefaultValue().value}
-                                    rules={{ required: "Payee is required" }}
-                                    render={(props) => (
-                                        <PayeeSelectControl
-                                            styles={{ borderColor: "red" }}
-                                            defaultValue={payeeDefaultValue()}
-                                            onChange={(option) => {
-                                                props.field.onChange(
-                                                    option.value
-                                                );
-                                            }}
-                                            {...props}
-                                        />
-                                    )}
-                                    name="payee_id"
-                                />
-                            </div>
+                            <LabelController
+                                label="Payee"
+                                name="payee"
+                                error={error}
+                                clienterrors={clientErrors}
+                                controller={
+                                    <PayeeController
+                                        control={control}
+                                        defaultValue={payeeDefaultValue()}
+                                        name="payee"
+                                    />
+                                }
+                            />
                         </article>
                     </section>
                 </article>
@@ -342,36 +273,19 @@ export default function TransactionForm({
                             />
                         </article>
                         <article className="column">
-                            <div className="field">
-                                <label className="label">Category</label>
-                                <Controller
-                                    control={control}
-                                    defaultValue={categoryDefaultValue().value}
-                                    rules={{ required: "Category is required" }}
-                                    render={(props) => (
-                                        <CategorySelectControl
-                                            defaultValue={categoryDefaultValue()}
-                                            onChange={(option) => {
-                                                props.field.onChange(
-                                                    option.value
-                                                );
-                                            }}
-                                            {...props}
-                                        />
-                                    )}
-                                    name="category_id"
-                                />
-                                {hasDbError("category_id") && (
-                                    <p className="help is-danger">
-                                        {getDbError("category_id")}
-                                    </p>
-                                )}
-                                {clientErrors.category_id && (
-                                    <p className="help is-danger">
-                                        {clientErrors.category_id.message}
-                                    </p>
-                                )}
-                            </div>
+                            <LabelController
+                                label="Category"
+                                name="category"
+                                error={error}
+                                clienterrors={clientErrors}
+                                controller={
+                                    <CategoryController
+                                        control={control}
+                                        defaultValue={categoryDefaultValue()}
+                                        name="category"
+                                    />
+                                }
+                            />
                         </article>
                     </section>
                 </article>
@@ -389,14 +303,13 @@ export default function TransactionForm({
                 </article>
             </section>
             <section className="columns">
-                <button
+                <Button
                     type="submit"
-                    className={`button is-primary is-fullwidth ${
-                        isLoading() ? "is-loading" : ""
-                    }`}
+                    classes="is-fullwidth"
+                    loading={isLoading().toString()}
                 >
-                    {isLoading() ? "Saving..." : "Save"}
-                </button>
+                    Save
+                </Button>
             </section>
         </form>
     );

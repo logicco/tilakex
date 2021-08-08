@@ -25,7 +25,7 @@ export default function LabelInput(props: Props) {
     return (
         <div className="field">
             <label className="label">{props.label}</label>
-            <div className="control has-icons-left">
+            <div className={`control ${props.icon && 'has-icons-left'}`}>
                 <input
                     {...props.register}
                     {...props}
@@ -50,4 +50,27 @@ export default function LabelInput(props: Props) {
             )}
         </div>
     );
+}
+
+interface LabelControllerProps {
+    label: string,
+    controller: any,
+    name: string,
+    error: StateError,
+    clienterrors: any
+}
+
+export function LabelController(props: LabelControllerProps) {
+    return (
+        <div className="field">
+            <label className="label">{props.label}</label>
+            {props.controller}
+            {hasDbError(props.name, props.error) && (
+                <FormError message={getDbError(props.name, props.error)} />
+            )}
+            {props.clienterrors[props.name] && (
+                <FormError message={props.clienterrors[props.name].message} />
+            )}
+        </div>
+    )
 }

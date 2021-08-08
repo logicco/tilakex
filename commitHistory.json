@@ -1,4 +1,8 @@
 {
+    "4": [
+        "slight code enhancements",
+        "removed global error dispatch for 404 errors"
+    ],
     "3": [
         "added config file for app bootstrap settings",
         "added support for Indian currency",

@@ -11,6 +11,7 @@ export function appDateFormat(date: string) {
     if(d.length !== 3){
         return "";
     }
+    
     var year =d[0];
     var month = d[1];
     var day = d[2];

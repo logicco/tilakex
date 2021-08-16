@@ -130,14 +130,10 @@ export default function TransactionForm({
     }
 
     const submitError: SubmitErrorHandler<Inputs> = (data) => {
-        console.log(data);
-        console.log(getValues())
     }
 
     const submitSuccess: SubmitHandler<Inputs> = (data) => {
-        console.log(data);
         if (isAddMode()) {
-            console.log("Should add");
             var form = {
                 amount: data.amount,
                 date: data.date,

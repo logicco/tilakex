@@ -1,4 +1,8 @@
 {
+    "6": [
+        "added transactions filter feature",
+        "added pagination support for transactions list"
+    ],
     "5": [
         "transaction form bug fixes"
     ],

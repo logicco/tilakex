@@ -18,8 +18,8 @@ class TransactionController extends Controller
         $this->authorize('touch', $account);
         $account->load('currency');
 
-        $sortList = ['date', 'name'];
-        $filterTypesList = [0,1,2];
+        $sortList = ['date'];
+        $filterTypesList = [0,1,2]; //0 = none, 1 = withdraw, 2 = deposit
         $filterDatesList = ["all","current_month", "last_month", "last_3_months"];
 
         $sortCol = 'date';

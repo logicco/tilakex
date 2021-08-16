@@ -2,9 +2,10 @@ import {createAsyncThunk, createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {Payee} from "../payee/payeeSlice";
 import { RawCategory} from "../categories/categorySlice";
 import {Account} from "../accounts/accountsSlice";
-import {Loading} from "../../../helpers/interfaces";
+import {Loading, TransactionFilterDate, TransactionFilterSort} from "../../../helpers/interfaces";
 import {buildAppError, buildStateError, StateError, ThunkError} from "../../../helpers/errorHandling";
 import axios from "axios";
+import { ReactSelect, transactionTypeFilterDefault, transactionTypesFilter } from "../../../helpers/dataCaching";
 
 export interface TransactionType { id: number; name: string }
 var defaultModalState = {visible: false, account_id: "", transaction_id:  ""}
@@ -24,8 +25,15 @@ export interface Transaction {
 export interface Links {
     first: string;
     last: string;
-    prev: string | null;
-    next: string | null;
+    prev: string;
+    next: string;
+}
+
+interface Filter {
+    sort: TransactionFilterSort,
+    transaction_type: ReactSelect,
+    date: TransactionFilterDate,
+    page: string,
 }
 
 interface TransactionsState {
@@ -43,6 +51,7 @@ interface TransactionsState {
     loading: Loading,
     modal: {visible: boolean, account_id: string, transaction_id: string}
     error: StateError;
+    filter?: Filter
 }
 
 var initialState: TransactionsState = {
@@ -66,6 +75,12 @@ var initialState: TransactionsState = {
     modal: defaultModalState,
     loading: "idle",
     error: null,
+    filter: {
+        sort: "date",
+        transaction_type: transactionTypeFilterDefault,
+        date: "all",
+        page: "1",
+    }
 };
 
 
@@ -95,7 +110,12 @@ function transform(data: any): TransactionsState {
         account: data.account,
         entities: {
             data: data.transactions.data,
-            links: data.transactions.links,
+            links: {
+                first: data.transactions.links.first,
+                last: data.transactions.links.last,
+                prev: data.transactions.links.prev ?? null,
+                next: data.transactions.links.next,
+            },
             meta: {
                 current_page: data.transactions.meta.current_page,
                 from: data.transactions.meta.from,
@@ -112,9 +132,9 @@ function transform(data: any): TransactionsState {
 
 export const getTransactions = createAsyncThunk(
     "transaction/get",
-    async (id: string, { rejectWithValue, dispatch }) => {
+    async (data: {accountId: string, query: string}, { rejectWithValue, dispatch }) => {
         try {
-            var res = await axios.get(`/accounts/${id}/transactions`);
+            var res = await axios.get(`/accounts/${data.accountId}/transactions?${data.query}`);
             return await res.data;
         } catch (err) {
             return rejectWithValue(buildAppError(err, dispatch));
@@ -179,6 +199,9 @@ const transactionSlice = createSlice({
     name: "transaction",
     initialState,
     reducers: {
+        setFilter(state, action: PayloadAction<Filter>) {
+            state.filter = action.payload
+        },
         resetTransactionState(state){
             return initialState
         },
@@ -264,5 +287,5 @@ const transactionSlice = createSlice({
     }
 })
 
-export const { showDeleteModal, hideDeleteModal, clearTransactions, updateAccount, resetTransactionState } = transactionSlice.actions
+export const { setFilter, showDeleteModal, hideDeleteModal, clearTransactions, updateAccount, resetTransactionState } = transactionSlice.actions
 export default transactionSlice;

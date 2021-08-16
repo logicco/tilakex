@@ -82,6 +82,9 @@ class ReportingController extends Controller
             $totalExpenses += $transaction->total_expenses;
         }
 
+
+       // dd($expenseTransactions);
+
         return response()->json([
             'income' => [
                 'data' => $by === "category" ? $this->categoryTransformer($incomeTransactions) : $incomeTransactions,
@@ -95,7 +98,7 @@ class ReportingController extends Controller
         ]);
     }
 
-    
+
     public function categoryTransformer(array $array) : array
     {
        $parentArr = [];
@@ -108,6 +111,8 @@ class ReportingController extends Controller
                array_push($nonParentArr, $arr);
            }
        }
+
+      // dd($parentArr, $nonParentArr);
 
        foreach($parentArr as $parent) {
            $id = $parent->id;
@@ -124,6 +129,8 @@ class ReportingController extends Controller
                 $parent->total_expenses += $parentTotal;
            }
        }
+
+      // dd($array, $parentArr, $nonParentArr);
 
        return count($parentArr) > 0 ? $parentArr : $nonParentArr;
     }

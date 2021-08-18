@@ -1,4 +1,9 @@
 {
+    "7": [
+        "trims long characters from transactions table",
+        "fixed incorrect date filter label format",
+        "sort transactions by date are new transactions are added"
+    ],
     "6": [
         "added transactions filter feature",
         "added pagination support for transactions list"

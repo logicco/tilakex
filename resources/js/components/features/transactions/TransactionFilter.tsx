@@ -70,16 +70,13 @@ export default function TransactionFilter(props: Props) {
                         <label className="label">Date</label>
                         <SelectControl
                             list={transactionFilterDates}
-                            transformer={(x) => {
-                                return { label: capitalizeFirstLetter(x), value: x };
+                            transformer={(x: ReactSelect) => {
+                                return x;
                             }}
-                            defaultValue={{
-                                label: capitalizeFirstLetter(filter.date),
-                                value: filter.date,
-                            }}
-                            onChange={(option) => dispatch(setFilter({
+                            defaultValue={filter.date}
+                            onChange={(option: ReactSelect) => dispatch(setFilter({
                                 ...filter,
-                                date: option.value
+                                date: option
                             }))}
                         />
                     </div>

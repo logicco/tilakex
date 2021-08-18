@@ -19,7 +19,7 @@ import TransactionTypeController from "../../TransactionTypeController";
 import PayeeController from "../../PayeeController";
 import CategoryController from "../../CategoryController";
 import Button from "../../Button";
-import { ReactSelect } from "../../../helpers/dataCaching";
+import { ReactSelect, transactionTypeDefault } from "../../../helpers/dataCaching";
 
 const amountRules = {
     required: "Amount is required",
@@ -126,10 +126,11 @@ export default function TransactionForm({
     function typeDefaultValue() {
         return isEditMode()
             ? { value: t.transaction_type.id, label: t.transaction_type.name }
-            : null;
+            : transactionTypeDefault;
     }
 
     const submitError: SubmitErrorHandler<Inputs> = (data) => {
+        console.log(getValues());
     }
 
     const submitSuccess: SubmitHandler<Inputs> = (data) => {

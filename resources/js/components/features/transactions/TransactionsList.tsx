@@ -20,9 +20,8 @@ export default function TransactionsList({transactions, account, selectTransacti
         <table className="table is-fullwidth">
             <thead>
             <tr>
-                <th>Account</th>
-                <th>Amount</th>
                 <th>Date</th>
+                <th>Amount</th>
                 <th>Category</th>
                 <th>Payee</th>
                 <th>Type</th>

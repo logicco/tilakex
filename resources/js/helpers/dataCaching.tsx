@@ -1,4 +1,4 @@
-import { TransactionFilterDate, TransactionFilterSort } from "./interfaces";
+import { TransactionFilterSort } from "./interfaces";
 
 export interface Currency {
     id: number;
@@ -24,6 +24,10 @@ export const transactionTypes: TransactionType[] = [
     { id: 1, name: "Withdraw" },
     { id: 2, name: "Deposit" },
 ];
+export const transactionTypeDefault: ReactSelect = {
+    value: transactionTypes[0].id.toString(),
+    label: transactionTypes[0].name
+}
 
 export const transactionTypesFilter: TransactionType[] = [
     { id: 0, name: "All" },
@@ -35,12 +39,14 @@ export const transactionTypeFilterDefault: ReactSelect = {
     value: transactionTypesFilter[0].id.toString(),
 };
 
-export const transactionFilterDates: TransactionFilterDate[] = [
-    "all",
-    "current_month",
-    "last_month",
-    "last_3_months",
+export const transactionFilterDates: ReactSelect[] = [
+    {value: "all", label: "All"},
+    {value: "current_month", label: "Only - Current Month"},
+    {value: "last_month", label: "Only - Last Month"},
+    {value: "last_3_months", label: "All - last 3 Months"},
 ];
+
+export const transactionDateFilterDefault: ReactSelect = transactionFilterDates[0]
 
 export function buildCurrencyLabel(currency: Currency) {
     return `${currency.code}`;

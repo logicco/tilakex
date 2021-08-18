@@ -52,7 +52,7 @@ export default function TransactionsPage() {
     }, []);
 
     function buildQuery(page: string | number) {
-        function build(key, value) {
+        function build(key: string, value: string | number) {
             return `${key}=${value}`;
         }
 
@@ -70,7 +70,7 @@ export default function TransactionsPage() {
             return str;
         }
 
-        const date = build("date", filter.date);
+        const date = build("date", filter.date.value);
         const sort = build("sort", filter.sort);
         const type = build("type", filter.transaction_type.value);
         const pageQ = build("page", page);
@@ -99,6 +99,7 @@ export default function TransactionsPage() {
     }
 
     function filterTransactions() {
+        console.log(buildQuery(meta.current_page));
         dispatch(
             getTransactions({
                 accountId: params.id,

@@ -2,10 +2,10 @@ import {createAsyncThunk, createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {Payee} from "../payee/payeeSlice";
 import { RawCategory} from "../categories/categorySlice";
 import {Account} from "../accounts/accountsSlice";
-import {Loading, TransactionFilterDate, TransactionFilterSort} from "../../../helpers/interfaces";
+import {Loading, TransactionFilterSort} from "../../../helpers/interfaces";
 import {buildAppError, buildStateError, StateError, ThunkError} from "../../../helpers/errorHandling";
 import axios from "axios";
-import { ReactSelect, transactionTypeFilterDefault, transactionTypesFilter } from "../../../helpers/dataCaching";
+import { ReactSelect, transactionDateFilterDefault, transactionTypeFilterDefault, transactionTypesFilter } from "../../../helpers/dataCaching";
 
 export interface TransactionType { id: number; name: string }
 var defaultModalState = {visible: false, account_id: "", transaction_id:  ""}
@@ -14,7 +14,7 @@ export interface Transaction {
     id: number;
     date: string;
     amount: number;
-    notes: string | null;
+    notes: string;
     void: boolean;
     category: RawCategory;
     payee: Payee;
@@ -32,7 +32,7 @@ export interface Links {
 interface Filter {
     sort: TransactionFilterSort,
     transaction_type: ReactSelect,
-    date: TransactionFilterDate,
+    date: ReactSelect,
     page: string,
 }
 
@@ -78,7 +78,7 @@ var initialState: TransactionsState = {
     filter: {
         sort: "date",
         transaction_type: transactionTypeFilterDefault,
-        date: "all",
+        date: transactionDateFilterDefault,
         page: "1",
     }
 };
@@ -260,7 +260,10 @@ const transactionSlice = createSlice({
             state.loading = "pending";
         })
         builder.addCase(addTransaction.fulfilled, (state, action) => {
-            state.entities.data.push(action.payload)
+            state.entities.data.push(action.payload);
+            state.entities.data.sort(function(a,b) {
+                return new Date(b.date).valueOf() - new Date(a.date).valueOf();
+            })
             state.error = null
             state.loading = "succeeded";
         })
